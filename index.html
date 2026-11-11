@@ -48,13 +48,30 @@ button{font:inherit;color:inherit;letter-spacing:inherit}
 .hero h1{margin:0;font-size:clamp(34px,6.4vw,64px);line-height:1.06;font-weight:600;letter-spacing:-.035em;text-wrap:balance;max-width:16ch}
 .hero p{margin:18px 0 0;font-size:clamp(17px,2.2vw,21px);line-height:1.4;color:var(--gray);max-width:48ch}
 
-/* yükleme */
-.drop{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:var(--card);border-radius:28px;padding:44px 24px;border:1.5px dashed #3a3a3c;transition:border-color .25s var(--ease),background .25s var(--ease)}
+/* konsol kodu kartı (üstte, sade) */
+.code-card{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:var(--card);border-radius:28px;padding:44px 24px;border:1px solid var(--line)}
+.code-card svg{width:44px;height:44px;stroke:var(--link);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.code-card h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
+.code-card p{margin:0;color:var(--gray);font-size:15px;max-width:46ch}
+.code-card code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
+.code-details{width:100%;max-width:640px;margin-top:4px;text-align:left}
+.code-details summary{cursor:pointer;text-align:center;font-size:13px;color:var(--gray);list-style:none;user-select:none;padding:4px 0}
+.code-details summary::-webkit-details-marker{display:none}
+.code-details summary:hover{color:var(--text)}
+.code-box-wrap{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.code-area{width:100%;height:150px;resize:vertical;border:1px solid var(--line);border-radius:14px;background:#111113;color:#d2d2d7;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12px;line-height:1.45;padding:12px 14px;outline:none}
+.code-area:focus{border-color:var(--link)}
+
+/* ayırıcı başlık */
+.alt-sep{display:flex;align-items:center;gap:14px;margin:28px 0 18px;color:var(--gray);font-size:13px}
+.alt-sep::before,.alt-sep::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* yükleme (altta) */
+.drop{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:var(--card);border-radius:28px;padding:34px 24px;border:1.5px dashed #3a3a3c;transition:border-color .25s var(--ease),background .25s var(--ease)}
 .drop.over{border-color:var(--link);background:#1f2530}
-.drop svg{width:44px;height:44px;stroke:var(--link);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.drop h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
-.drop p{margin:0;color:var(--gray);font-size:15px;max-width:46ch}
-.drop code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
+.drop h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.drop p{margin:0;color:var(--gray);font-size:14px;max-width:46ch}
+.drop code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
 .btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:6px}
 .btn{border:0;cursor:pointer;border-radius:980px;padding:11px 22px;font-size:15px;font-weight:500;background:var(--link);color:#fff;transition:filter .2s var(--ease),background .2s var(--ease)}
 .btn:hover{filter:brightness(1.12)}
@@ -64,15 +81,6 @@ button{font:inherit;color:inherit;letter-spacing:inherit}
 .files{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
 .chip{font-size:12px;border-radius:980px;padding:5px 12px;background:var(--card);color:var(--gray)}
 .chip.ok{color:var(--good)}
-
-/* konsol kodu kutusu */
-.code-card{margin-top:20px;background:var(--card);border-radius:28px;padding:32px 24px;border:1px solid var(--line)}
-.code-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
-.code-head h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em}
-.code-head p{margin:6px 0 0;color:var(--gray);font-size:15px;max-width:58ch}
-.code-head code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
-.code-area{width:100%;height:190px;resize:vertical;border:1px solid var(--line);border-radius:16px;background:#111113;color:#d2d2d7;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;padding:14px 16px;outline:none}
-.code-area:focus{border-color:var(--link)}
 
 /* sonuçlar */
 .res{padding-block:28px 0;scroll-margin-top:64px}
@@ -124,7 +132,7 @@ footer a:hover{text-decoration:underline}
 @media (max-width:560px){
   .nav nav a.opt{display:none}
   .hero{padding-block:44px 28px}
-  .drop,.code-card{padding:28px 18px;border-radius:22px}
+  .code-card,.drop{padding:30px 18px;border-radius:22px}
   .stats{gap:8px}
   .stat{padding:14px 12px;border-radius:16px}
   .side{justify-content:stretch}
@@ -150,19 +158,41 @@ footer a:hover{text-decoration:underline}
 <main>
   <section class="hero gut">
     <div class="wrap">
-      <h1>Seni kim takip etmiyor. <span class="g">Tek dosyayla öğren.</span></h1>
-      <p>Instagram'ın sana verdiği resmî veri dosyasını yükle, geri takip etmeyenleri saniyeler içinde gör. Şifre yok, giriş yok, veriler cihazından çıkmaz.</p>
+      <h1>Seni kim takip etmiyor. <span class="g">Anında öğren.</span></h1>
+      <p>Kodu kopyalayıp Instagram konsoluna yapıştırarak hemen bak ya da indirdiğin veri dosyasını yükle.</p>
     </div>
   </section>
 
   <section class="gut" id="arac">
     <div class="wrap">
-      <div class="drop" id="drop">
-        <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18"/><circle cx="22" cy="22" r="10"/><path d="M22 22 34 10"/><circle cx="22" cy="22" r="1.6" fill="#2997ff"/></svg>
-        <h2>Dosyanı buraya bırak</h2>
-        <p>Instagram'dan indirdiğin <code>.zip</code> dosyasını ya da içindeki <code>followers_1</code> ve <code>following</code> dosyalarını seç. JSON ve HTML biçimlerinin ikisi de olur.</p>
+      <!-- 1. YÖNTEM (ÜSTTE): KONSOL KODU -->
+      <div class="code-card" id="konsol">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="6" y="8" width="32" height="28" rx="6"/><path d="m15 18 5 4-5 4"/><path d="M23 26h6"/></svg>
+        <h2>Konsol kodu ile doğrudan analiz</h2>
+        <p>Dosya indirmeden hemen bakmak için kodu kopyala, bilgisayardan açtığın <code>instagram.com</code> sayfasında konsola (<code>F12</code> → <code>Console</code>) yapıştır ve Enter'a bas.</p>
         <div class="btns">
-          <button class="btn" id="pick" type="button">Dosya seç</button>
+          <button class="btn" id="copyCode" type="button">Kodu kopyala</button>
+          <a class="btn ghost" href="#nasil">Nasıl yapılır?</a>
+        </div>
+        <details class="code-details">
+          <summary>Kodu görüntüle</summary>
+          <div class="code-box-wrap">
+            <textarea class="code-area" id="consoleCodeBox" readonly spellcheck="false" aria-label="Instagram konsol kodu"></textarea>
+            <div style="display:flex;justify-content:flex-end">
+              <button class="btn ghost sm" id="selectCode" type="button">Tümünü seç</button>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="alt-sep">veya veri dosyasıyla bak</div>
+
+      <!-- 2. YÖNTEM (ALTTA): DOSYA BIRAKMA -->
+      <div class="drop" id="drop">
+        <h2>Dosyanı buraya bırak</h2>
+        <p>Instagram'dan indirdiğin <code>.zip</code> dosyasını ya da içindeki <code>followers_1</code> ve <code>following</code> dosyalarını seç.</p>
+        <div class="btns">
+          <button class="btn ghost" id="pick" type="button">Dosya seç</button>
           <button class="btn ghost" id="demo" type="button">Örnek veriyle dene</button>
         </div>
         <input id="file" type="file" accept=".zip,.json,.html,.htm,application/zip,application/json,text/html" multiple hidden>
@@ -194,20 +224,6 @@ footer a:hover{text-decoration:underline}
         <p class="note">Takipten çıkmak istediğin hesabın profilini açıp Instagram'ın kendi düğmesini kullan. Bu site senin adına hiçbir işlem yapmaz.</p>
       </div>
 
-      <div class="code-card" id="konsol">
-        <div class="code-head">
-          <div>
-            <h2>Konsol kodu ile doğrudan analiz</h2>
-            <p>Veri dosyasını beklemek istemiyorsan aşağıdaki kodu kopyalayıp bilgisayardan açtığın <code>instagram.com</code> sayfasının geliştirici konsoluna (<code>F12</code> → <code>Console</code>) yapıştırarak seni takip etmeyenleri anında bulabilirsin.</p>
-          </div>
-          <div class="btns" style="margin-top:0">
-            <button class="btn" id="copyCode" type="button">Kodu kopyala</button>
-            <button class="btn ghost" id="selectCode" type="button">Tümünü seç</button>
-          </div>
-        </div>
-        <textarea class="code-area" id="consoleCodeBox" readonly spellcheck="false" aria-label="Instagram konsol kodu"></textarea>
-      </div>
-
       <!-- REKLAM ALANI 1: AdSense <ins class="adsbygoogle"> kodunu bu kutunun içine, <span> yerine yapıştırın. -->
       <div class="ad"><span>Reklam</span></div>
     </div>
@@ -215,23 +231,22 @@ footer a:hover{text-decoration:underline}
 
   <section class="sec gut" id="nasil">
     <div class="wrap">
-      <h2>Verini indir. <span class="g">Dört adım.</span></h2>
+      <h2>Konsol kodu ile. <span class="g">Dört adım.</span></h2>
+      <ol class="steps">
+        <li>Yukarıdaki <b>Kodu kopyala</b> düğmesine basarak analiz kodunu kopyala.</li>
+        <li>Bilgisayardan <b>instagram.com</b> adresini açıp hesabına giriş yap.</li>
+        <li>Klavyeden <b>F12</b> (veya sağ tık → <b>İncele</b>) ile açılan pencerede <b>Console (Konsol)</b> sekmesine tıkla.</li>
+        <li>Kodu konsola yapıştırıp <b>Enter</b>'a bas ve açılan ekranda <b>Taramayı Başlat</b> düğmesine tıkla.</li>
+      </ol>
+      <p class="note">Konsola ilk kez kod yapıştırırken uyarı çıkarsa <b>allow pasting</b> (veya <b>yapıştırmaya izin ver</b>) yazıp Enter'a bastıktan sonra kodu yapıştırabilirsin.</p>
+
+      <h2 style="margin-top:56px">Verini indirerek. <span class="g">Dört adım.</span></h2>
       <ol class="steps">
         <li>Instagram'da <b>Ayarlar → Hesaplar Merkezi → Bilgilerin ve izinlerin → Bilgilerini indir</b> yolunu aç.</li>
         <li><b>Bazı bilgilerin</b> seçeneğinden yalnızca <b>Takipçiler ve takip edilenler</b> kutusunu işaretle.</li>
         <li>Tarih aralığını <b>Tüm zamanlar</b>, biçimi <b>JSON</b> yap ve <b>Cihaza indir</b> ile isteği oluştur.</li>
-        <li>Instagram dosya hazır olunca haber verir. İndirdiğin <b>.zip</b> dosyasını yukarıdaki alana bırak.</li>
+        <li>Instagram dosya hazır olunca haber verir. İndirdiğin <b>.zip</b> dosyasını yukarıdaki dosya alanına bırak.</li>
       </ol>
-      <p class="note">Instagram menü adlarını zaman zaman değiştirir. Aradığın bölüm "Bilgilerini indir" ya da "Bilgilerini dışa aktar" adıyla geçer. Dosyanın hazırlanması birkaç dakika ile birkaç saat arasında sürebilir.</p>
-
-      <h2 style="margin-top:56px">Konsol kodu ile. <span class="g">Dört adım.</span></h2>
-      <ol class="steps">
-        <li>Yukarıdaki <b>Kodu kopyala</b> düğmesine tıklayarak S-Follow Radar analiz kodunu panoya kopyala.</li>
-        <li>Bilgisayardan tarayıcında <b>instagram.com</b> adresini aç ve hesabına giriş yap.</li>
-        <li>Klavyeden <b>F12</b> (Mac'te <b>Cmd + Option + J</b> veya sağ tık → <b>İncele</b>) ile açılan pencerede <b>Console (Konsol)</b> sekmesine geç.</li>
-        <li>Kopyaladığın kodu konsola yapıştırıp <b>Enter</b> tuşuna bas; ekranda açılan S-Follow Radar aracından <b>Taramayı Başlat</b> düğmesine tıkla.</li>
-      </ol>
-      <p class="note">Tarayıcı konsola ilk kez kod yapıştırırken güvenlik uyarısı verirse konsola <b>allow pasting</b> (veya Türkçe tarayıcılarda <b>yapıştırmaya izin ver</b>) yazıp Enter'a bastıktan sonra kodu yapıştırabilirsin.</p>
     </div>
   </section>
 
@@ -240,7 +255,7 @@ footer a:hover{text-decoration:underline}
       <h2>Bilmen gerekenler. <span class="g">Açıkça.</span></h2>
       <div class="warns">
         <div class="warn"><h3>Verin cihazında kalır</h3><p>Dosya tarayıcının içinde okunur. Hiçbir sunucuya yüklenmez, kaydedilmez. Sayfayı kapattığında silinir.</p></div>
-        <div class="warn"><h3>Şifreni kimse istemez</h3><p>Bu site Instagram şifreni, giriş yapmanı ya da tarayıcına kod yapıştırmanı istemez. Bunları isteyen sitelerden uzak dur.</p></div>
+        <div class="warn"><h3>Şifreni kimse istemez</h3><p>Bu site Instagram şifreni ya da giriş bilgilerini istemez. Şifreni isteyen sitelerden uzak dur.</p></div>
         <div class="warn"><h3>Dosyanı paylaşma</h3><p>İndirdiğin veri dosyası kişisel bilgilerini içerir. Başkasına gönderme, tanımadığın sitelere yükleme.</p></div>
         <div class="warn"><h3>Sonuç dosyanın tarihine aittir</h3><p>Liste, dosyayı indirdiğin andaki durumu gösterir. Kapatılmış ya da adını değiştirmiş hesaplar listede görünebilir.</p></div>
         <div class="warn"><h3>Instagram ile bağlantısı yok</h3><p>S-Follow Radar bağımsız bir araçtır. Instagram ya da Meta tarafından geliştirilmemiş, onaylanmamıştır.</p></div>
