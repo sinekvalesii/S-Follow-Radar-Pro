@@ -1,0 +1,1499 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>S-Follow Radar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
+<!-- REKLAM (Google AdSense): onay aldıktan sonra AdSense'in verdiği <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script> satırını buraya ekleyin. -->
+<style>
+/* Layout: mağaza düzeni — yapışkan cam menü, iki tonlu büyük başlık, tek sütunda araç, altında adımlar ve uyarılar. Tek karanlık tema. */
+:root{
+  --bg:#000;
+  --card:#1c1c1e;
+  --card-2:#2a2a2d;
+  --text:#f5f5f7;
+  --gray:#86868b;
+  --link:#2997ff;
+  --line:#2c2c2e;
+  --warn:#ff9f0a;
+  --bad:#ff453a;
+  --good:#30d158;
+  --f:-apple-system,BlinkMacSystemFont,"SF Pro Display","Geist","Helvetica Neue",Arial,sans-serif;
+  --wrap:980px;
+  --ease:cubic-bezier(.25,.1,.25,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--f);font-size:17px;line-height:1.47;letter-spacing:-.022em;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:rgba(22,22,23,.8)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;letter-spacing:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:6px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:var(--wrap);margin:0 auto}
+.g{color:var(--gray)}
+
+/* menü */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(22,22,23,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:48px;font-size:12px}
+.nav b{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.nav nav{display:flex;gap:22px;color:#d2d2d7}
+.nav nav a{opacity:.8;transition:opacity .2s var(--ease)}
+.nav nav a:hover{opacity:1}
+
+/* başlık */
+.hero{padding-block:64px 36px}
+.hero h1{margin:0;font-size:clamp(34px,6.4vw,64px);line-height:1.06;font-weight:600;letter-spacing:-.035em;text-wrap:balance;max-width:16ch}
+.hero p{margin:18px 0 0;font-size:clamp(17px,2.2vw,21px);line-height:1.4;color:var(--gray);max-width:48ch}
+
+/* yükleme */
+.drop{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:var(--card);border-radius:28px;padding:44px 24px;border:1.5px dashed #3a3a3c;transition:border-color .25s var(--ease),background .25s var(--ease)}
+.drop.over{border-color:var(--link);background:#1f2530}
+.drop svg{width:44px;height:44px;stroke:var(--link);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.drop h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
+.drop p{margin:0;color:var(--gray);font-size:15px;max-width:46ch}
+.drop code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
+.btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:6px}
+.btn{border:0;cursor:pointer;border-radius:980px;padding:11px 22px;font-size:15px;font-weight:500;background:var(--link);color:#fff;transition:filter .2s var(--ease),background .2s var(--ease)}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:var(--card-2);color:var(--text)}
+.btn.sm{padding:7px 14px;font-size:13px}
+.msg{margin:14px 0 0;font-size:14px;color:var(--warn);text-align:center;min-height:1.4em}
+.files{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.chip{font-size:12px;border-radius:980px;padding:5px 12px;background:var(--card);color:var(--gray)}
+.chip.ok{color:var(--good)}
+
+/* konsol kodu kutusu */
+.code-card{margin-top:20px;background:var(--card);border-radius:28px;padding:32px 24px;border:1px solid var(--line)}
+.code-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.code-head h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.code-head p{margin:6px 0 0;color:var(--gray);font-size:15px;max-width:58ch}
+.code-head code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;color:#d2d2d7;background:var(--card-2);padding:2px 6px;border-radius:6px;letter-spacing:0}
+.code-area{width:100%;height:190px;resize:vertical;border:1px solid var(--line);border-radius:16px;background:#111113;color:#d2d2d7;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;padding:14px 16px;outline:none}
+.code-area:focus{border-color:var(--link)}
+
+/* sonuçlar */
+.res{padding-block:28px 0;scroll-margin-top:64px}
+.demo{display:inline-block;font-size:12px;font-weight:600;color:#000;background:var(--warn);border-radius:980px;padding:4px 12px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:var(--card);border-radius:20px;padding:18px 16px;min-width:0}
+.stat b{display:block;font-size:clamp(26px,5vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--gray)}
+.stat.hot b{color:var(--bad)}
+.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 14px}
+.seg{display:flex;background:var(--card);border-radius:11px;padding:3px;max-width:100%;overflow-x:auto}
+.seg button{border:0;background:transparent;cursor:pointer;white-space:nowrap;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:500;color:var(--gray);transition:background .2s var(--ease),color .2s var(--ease)}
+.seg button[aria-selected="true"]{background:#636366;color:#fff}
+.side{display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end;min-width:220px}
+.q{flex:1;max-width:260px;min-width:0;border:0;border-radius:10px;background:var(--card);color:var(--text);font:inherit;font-size:15px;padding:8px 12px}
+.q::placeholder{color:var(--gray)}
+.list{background:var(--card);border-radius:20px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--card-2);display:grid;place-items:center;font-size:13px;font-weight:600;color:#d2d2d7;text-transform:uppercase}
+.un{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.row a{flex:none;color:var(--link);font-size:14px}
+.row a:hover{text-decoration:underline}
+.empty{padding:34px 16px;text-align:center;color:var(--gray);font-size:15px}
+.more{display:flex;justify-content:center;margin-top:14px}
+.note{margin:14px 0 0;font-size:13px;color:var(--gray)}
+
+/* reklam */
+.ad{margin:36px auto 0;max-width:728px;min-height:90px;border-radius:16px;background:#0d0d0f;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.ad>span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#48484a}
+
+/* bölümler */
+.sec{padding-block:72px 0}
+.sec h2{margin:0 0 24px;font-size:clamp(26px,4vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.1;text-wrap:balance}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;background:var(--card);border-radius:20px;padding:22px 20px;font-size:15px;line-height:1.45;color:#d2d2d7}
+.steps li::before{content:counter(s);display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;color:var(--gray);margin-bottom:8px}
+.steps b{color:var(--text);font-weight:600}
+.warns{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.warn{background:var(--card);border-radius:20px;padding:22px 20px}
+.warn h3{margin:0 0 6px;font-size:17px;font-weight:600}
+.warn p{margin:0;font-size:15px;color:var(--gray);line-height:1.45}
+
+footer{margin-top:80px;border-top:1px solid var(--line);padding-block:22px calc(22px + env(safe-area-inset-bottom,0px));font-size:12px;color:var(--gray)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+footer a{color:#d2d2d7}
+footer a:hover{text-decoration:underline}
+
+@media (max-width:560px){
+  .nav nav a.opt{display:none}
+  .hero{padding-block:44px 28px}
+  .drop,.code-card{padding:28px 18px;border-radius:22px}
+  .stats{gap:8px}
+  .stat{padding:14px 12px;border-radius:16px}
+  .side{justify-content:stretch}
+  .q{max-width:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .res:not([hidden]){animation:up .45s var(--ease) both}
+  @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+</style>
+
+<header class="nav gut">
+  <div class="wrap">
+    <b>S-Follow Radar</b>
+    <nav>
+      <a href="#arac">Araç</a>
+      <a href="#nasil">Nasıl yapılır</a>
+      <a class="opt" href="#bilgi">Bilmen gerekenler</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero gut">
+    <div class="wrap">
+      <h1>Seni kim takip etmiyor. <span class="g">Tek dosyayla öğren.</span></h1>
+      <p>Instagram'ın sana verdiği resmî veri dosyasını yükle, geri takip etmeyenleri saniyeler içinde gör. Şifre yok, giriş yok, veriler cihazından çıkmaz.</p>
+    </div>
+  </section>
+
+  <section class="gut" id="arac">
+    <div class="wrap">
+      <div class="drop" id="drop">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18"/><circle cx="22" cy="22" r="10"/><path d="M22 22 34 10"/><circle cx="22" cy="22" r="1.6" fill="#2997ff"/></svg>
+        <h2>Dosyanı buraya bırak</h2>
+        <p>Instagram'dan indirdiğin <code>.zip</code> dosyasını ya da içindeki <code>followers_1</code> ve <code>following</code> dosyalarını seç. JSON ve HTML biçimlerinin ikisi de olur.</p>
+        <div class="btns">
+          <button class="btn" id="pick" type="button">Dosya seç</button>
+          <button class="btn ghost" id="demo" type="button">Örnek veriyle dene</button>
+        </div>
+        <input id="file" type="file" accept=".zip,.json,.html,.htm,application/zip,application/json,text/html" multiple hidden>
+      </div>
+      <div class="files" id="files"></div>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+      <div class="res" id="res" hidden>
+        <span class="demo" id="demoTag" hidden>Örnek veri — senin hesabın değil</span>
+        <div class="stats">
+          <div class="stat"><b id="nFollowing">0</b><span>Takip ettiğin</span></div>
+          <div class="stat"><b id="nFollowers">0</b><span>Takipçin</span></div>
+          <div class="stat hot"><b id="nNot">0</b><span>Geri takip etmeyen</span></div>
+        </div>
+        <div class="tools">
+          <div class="seg" role="tablist" aria-label="Liste">
+            <button type="button" role="tab" data-t="not" aria-selected="true">Geri takip etmeyenler</button>
+            <button type="button" role="tab" data-t="fans" aria-selected="false">Senin takip etmediklerin</button>
+            <button type="button" role="tab" data-t="both" aria-selected="false">Karşılıklı</button>
+          </div>
+          <div class="side">
+            <input class="q" id="q" type="search" placeholder="Kullanıcı ara" aria-label="Kullanıcı ara" autocomplete="off">
+            <button class="btn ghost sm" id="copy" type="button">Listeyi kopyala</button>
+            <button class="btn ghost sm" id="reset" type="button">Temizle</button>
+          </div>
+        </div>
+        <div class="list" id="list"></div>
+        <div class="more"><button class="btn ghost sm" id="more" type="button" hidden>Daha fazla göster</button></div>
+        <p class="note">Takipten çıkmak istediğin hesabın profilini açıp Instagram'ın kendi düğmesini kullan. Bu site senin adına hiçbir işlem yapmaz.</p>
+      </div>
+
+      <div class="code-card" id="konsol">
+        <div class="code-head">
+          <div>
+            <h2>Konsol kodu ile doğrudan analiz</h2>
+            <p>Veri dosyasını beklemek istemiyorsan aşağıdaki kodu kopyalayıp bilgisayardan açtığın <code>instagram.com</code> sayfasının geliştirici konsoluna (<code>F12</code> → <code>Console</code>) yapıştırarak seni takip etmeyenleri anında bulabilirsin.</p>
+          </div>
+          <div class="btns" style="margin-top:0">
+            <button class="btn" id="copyCode" type="button">Kodu kopyala</button>
+            <button class="btn ghost" id="selectCode" type="button">Tümünü seç</button>
+          </div>
+        </div>
+        <textarea class="code-area" id="consoleCodeBox" readonly spellcheck="false" aria-label="Instagram konsol kodu"></textarea>
+      </div>
+
+      <!-- REKLAM ALANI 1: AdSense <ins class="adsbygoogle"> kodunu bu kutunun içine, <span> yerine yapıştırın. -->
+      <div class="ad"><span>Reklam</span></div>
+    </div>
+  </section>
+
+  <section class="sec gut" id="nasil">
+    <div class="wrap">
+      <h2>Verini indir. <span class="g">Dört adım.</span></h2>
+      <ol class="steps">
+        <li>Instagram'da <b>Ayarlar → Hesaplar Merkezi → Bilgilerin ve izinlerin → Bilgilerini indir</b> yolunu aç.</li>
+        <li><b>Bazı bilgilerin</b> seçeneğinden yalnızca <b>Takipçiler ve takip edilenler</b> kutusunu işaretle.</li>
+        <li>Tarih aralığını <b>Tüm zamanlar</b>, biçimi <b>JSON</b> yap ve <b>Cihaza indir</b> ile isteği oluştur.</li>
+        <li>Instagram dosya hazır olunca haber verir. İndirdiğin <b>.zip</b> dosyasını yukarıdaki alana bırak.</li>
+      </ol>
+      <p class="note">Instagram menü adlarını zaman zaman değiştirir. Aradığın bölüm "Bilgilerini indir" ya da "Bilgilerini dışa aktar" adıyla geçer. Dosyanın hazırlanması birkaç dakika ile birkaç saat arasında sürebilir.</p>
+
+      <h2 style="margin-top:56px">Konsol kodu ile. <span class="g">Dört adım.</span></h2>
+      <ol class="steps">
+        <li>Yukarıdaki <b>Kodu kopyala</b> düğmesine tıklayarak S-Follow Radar analiz kodunu panoya kopyala.</li>
+        <li>Bilgisayardan tarayıcında <b>instagram.com</b> adresini aç ve hesabına giriş yap.</li>
+        <li>Klavyeden <b>F12</b> (Mac'te <b>Cmd + Option + J</b> veya sağ tık → <b>İncele</b>) ile açılan pencerede <b>Console (Konsol)</b> sekmesine geç.</li>
+        <li>Kopyaladığın kodu konsola yapıştırıp <b>Enter</b> tuşuna bas; ekranda açılan S-Follow Radar aracından <b>Taramayı Başlat</b> düğmesine tıkla.</li>
+      </ol>
+      <p class="note">Tarayıcı konsola ilk kez kod yapıştırırken güvenlik uyarısı verirse konsola <b>allow pasting</b> (veya Türkçe tarayıcılarda <b>yapıştırmaya izin ver</b>) yazıp Enter'a bastıktan sonra kodu yapıştırabilirsin.</p>
+    </div>
+  </section>
+
+  <section class="sec gut" id="bilgi">
+    <div class="wrap">
+      <h2>Bilmen gerekenler. <span class="g">Açıkça.</span></h2>
+      <div class="warns">
+        <div class="warn"><h3>Verin cihazında kalır</h3><p>Dosya tarayıcının içinde okunur. Hiçbir sunucuya yüklenmez, kaydedilmez. Sayfayı kapattığında silinir.</p></div>
+        <div class="warn"><h3>Şifreni kimse istemez</h3><p>Bu site Instagram şifreni, giriş yapmanı ya da tarayıcına kod yapıştırmanı istemez. Bunları isteyen sitelerden uzak dur.</p></div>
+        <div class="warn"><h3>Dosyanı paylaşma</h3><p>İndirdiğin veri dosyası kişisel bilgilerini içerir. Başkasına gönderme, tanımadığın sitelere yükleme.</p></div>
+        <div class="warn"><h3>Sonuç dosyanın tarihine aittir</h3><p>Liste, dosyayı indirdiğin andaki durumu gösterir. Kapatılmış ya da adını değiştirmiş hesaplar listede görünebilir.</p></div>
+        <div class="warn"><h3>Instagram ile bağlantısı yok</h3><p>S-Follow Radar bağımsız bir araçtır. Instagram ya da Meta tarafından geliştirilmemiş, onaylanmamıştır.</p></div>
+        <div class="warn"><h3>Reklamlar</h3><p>Site ücretsizdir ve reklamla ayakta durur. Reklamlar Google tarafından gösterilir ve Google çerez kullanabilir.</p></div>
+      </div>
+
+      <!-- REKLAM ALANI 2: AdSense <ins class="adsbygoogle"> kodunu bu kutunun içine, <span> yerine yapıştırın. -->
+      <div class="ad"><span>Reklam</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="gut">
+  <div class="wrap">
+    <span>Yapım: <a href="https://sinekvalesii.github.io/selcukyus/" target="_blank" rel="noopener">selcukyus</a> · © 2026</span>
+    <span>Instagram, Meta Platforms, Inc. şirketinin tescilli markasıdır.</span>
+  </div>
+</footer>
+
+<script type="text/plain" id="consoleCodeRaw">
+(() => {
+  "use strict";
+
+  if (window.location.hostname !== "www.instagram.com") {
+    alert("Lütfen önce https://www.instagram.com adresini açın ve kodu tekrar çalıştırın.");
+    return;
+  }
+
+  const HOST_ID = "s-follow-radar-host";
+  if (document.getElementById(HOST_ID)) {
+    document.getElementById(HOST_ID).remove();
+  }
+
+  // Instagram Zorunlu Protokol Sabitleri (Teliflenemez API Parametreleri)
+  const IG_PROTOCOL = {
+    APP_ID: "936619743392459",
+    ASBD_ID: "129477",
+    UNFOLLOW_DOC_ID: "27789106940691111",
+    UNFOLLOW_MUTATION: "usePolarisUnfollowMutation"
+  };
+
+  const STORAGE_KEYS = {
+    WHITELIST: "s_radar_whitelist_v1",
+    CONFIG: "s_radar_config_v1",
+    CACHE: "s_radar_last_scan_v1"
+  };
+
+  class SFollowRadar {
+    constructor() {
+      this.whitelist = new Set(this.loadStorage(STORAGE_KEYS.WHITELIST, []));
+      this.config = Object.assign({
+        pageSize: 150,
+        scanMinMs: 1100,
+        scanMaxMs: 1800,
+        scanBatchPause: 6,
+        scanCooldownMs: 9000,
+        unfollowMinMs: 4200,
+        unfollowMaxMs: 5500,
+        unfollowBatchPause: 5,
+        unfollowCooldownMs: 240000 // 4 Dakika Güvenlik Molası
+      }, this.loadStorage(STORAGE_KEYS.CONFIG, {}));
+
+      this.data = {
+        following: [],
+        followersMap: new Set(),
+        nonFollowers: [],
+        mutuals: []
+      };
+
+      this.uiState = {
+        activeTab: "nonFollowers", // nonFollowers | mutuals | whitelist | settings
+        selectedIds: new Set(),
+        searchQuery: "",
+        filterVerified: true,
+        filterPrivate: true,
+        status: "idle", // idle | scanning | unfollowing
+        paused: false,
+        aborted: false,
+        statusText: "Analiz için hazır.",
+        progressPct: 0,
+        counterText: "0 / 0",
+        timerText: ""
+      };
+
+      this.tokens = null;
+      this.activeController = null;
+      this.initShadowDOM();
+    }
+
+    // --- YEREL DEPOLAMA YÖNETİMİ ---
+    loadStorage(key, fallback) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    saveStorage(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) {
+        console.warn("[S-Radar] Depolama hatası:", e);
+      }
+    }
+
+    getCookie(name) {
+      const m = document.cookie.match(new RegExp("(^|; )" + name + "=([^;]*)"));
+      return m ? decodeURIComponent(m[2]) : null;
+    }
+
+    // --- YARDIMCI ZAMANLAYICILAR ---
+    randomJitter(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    async sleepWithTimer(ms, labelPrefix) {
+      let remaining = ms;
+      const step = 250;
+      while (remaining > 0) {
+        if (this.uiState.aborted) break;
+        if (this.uiState.paused) {
+          this.updateTimerUI("Duraklatıldı");
+          await new Promise(r => setTimeout(r, 500));
+          continue;
+        }
+        const sec = Math.ceil(remaining / 1000);
+        this.updateTimerUI(`${labelPrefix}: ${sec} sn`);
+        await new Promise(r => setTimeout(r, Math.min(step, remaining)));
+        remaining -= step;
+      }
+      this.updateTimerUI("");
+    }
+
+    // --- INSTAGRAM AĞ VE TOKEN MOTORU ---
+    async resolveSecurityTokens() {
+      if (this.tokens) return this.tokens;
+      try {
+        if (typeof window.require === "function") {
+          const dtsg = window.require("DTSGInitialData")?.token;
+          const lsd = window.require("LSD")?.token;
+          if (dtsg && lsd) {
+            this.tokens = { dtsg, lsd };
+            return this.tokens;
+          }
+        }
+      } catch {}
+
+      const html = document.documentElement.innerHTML;
+      const dtsg = /"DTSGInitialData",\[\],\{"token":"([^"]+)"/.exec(html)?.[1] || /"dtsg":\{"token":"([^"]+)"/.exec(html)?.[1];
+      const lsd = /"LSD",\[\],\{"token":"([^"]+)"/.exec(html)?.[1];
+      if (dtsg && lsd) {
+        this.tokens = { dtsg, lsd };
+        return this.tokens;
+      }
+
+      const res = await fetch("/", { credentials: "include" });
+      const text = await res.text();
+      const dtsgFetch = /"DTSGInitialData",\[\],\{"token":"([^"]+)"/.exec(text)?.[1];
+      const lsdFetch = /"LSD",\[\],\{"token":"([^"]+)"/.exec(text)?.[1];
+      if (dtsgFetch && lsdFetch) {
+        this.tokens = { dtsg: dtsgFetch, lsd: lsdFetch };
+      }
+      return this.tokens;
+    }
+
+    computeJazoest(token) {
+      let total = 0;
+      for (let i = 0; i < token.length; i++) total += token.charCodeAt(i);
+      return `2${total}`;
+    }
+
+    async apiRequest(endpoint) {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (this.uiState.aborted) throw new Error("İşlem iptal edildi.");
+        this.activeController = new AbortController();
+        try {
+          const response = await fetch(endpoint, {
+            credentials: "include",
+            signal: this.activeController.signal,
+            headers: {
+              "x-ig-app-id": IG_PROTOCOL.APP_ID,
+              "x-asbd-id": IG_PROTOCOL.ASBD_ID,
+              "x-requested-with": "XMLHttpRequest"
+            }
+          });
+
+          if (response.status === 429) {
+            throw new Error("Instagram hız sınırına (Rate Limit) takıldınız. Lütfen birkaç saat bekleyin.");
+          }
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("Instagram oturumu doğrulamadı veya geçici kısıtlama uyguladı.");
+          }
+
+          const data = await response.json();
+          return data;
+        } catch (err) {
+          if (this.uiState.aborted) throw err;
+          if (attempt === 2) throw err;
+          await this.sleepWithTimer(4000 * (attempt + 1), "Yeniden deneniyor");
+        }
+      }
+    }
+
+    // --- TARAMA (SCAN) MOTORU ---
+    async startAnalysis() {
+      const viewerId = this.getCookie("ds_user_id");
+      if (!viewerId) {
+        alert("Instagram oturumu bulunamadı. Lütfen giriş yapın.");
+        return;
+      }
+
+      this.uiState.status = "scanning";
+      this.uiState.paused = false;
+      this.uiState.aborted = false;
+      this.uiState.selectedIds.clear();
+      this.data.following = [];
+      this.data.followersMap.clear();
+      this.render();
+
+      try {
+        // 1. Aşama: Takipçileri Çek
+        this.updateStatusUI("1/2: Takipçileriniz taranıyor...", 15, "Başlatılıyor");
+        const followers = await this.fetchPaginatedList(viewerId, "followers", (loaded) => {
+          this.updateStatusUI("1/2: Takipçileriniz okunuyor...", 35, `${loaded} takipçi yüklendi`);
+        });
+
+        followers.forEach(u => {
+          this.data.followersMap.add(String(u.id));
+          this.data.followersMap.add(u.username.toLowerCase());
+        });
+
+        if (this.uiState.aborted) return this.finishScan(true);
+
+        // 2. Aşama: Takip Edilenleri Çek ve Karşılaştır
+        this.updateStatusUI("2/2: Takip ettikleriniz karşılaştırılıyor...", 60, "Başlatılıyor");
+        const following = await this.fetchPaginatedList(viewerId, "following", (loaded) => {
+          this.updateStatusUI("2/2: Takip ettikleriniz analiz ediliyor...", 85, `${loaded} hesap kontrol edildi`);
+        });
+
+        this.data.following = following;
+        this.categorizeUsers();
+        this.saveStorage(STORAGE_KEYS.CACHE, {
+          timestamp: Date.now(),
+          nonFollowers: this.data.nonFollowers,
+          mutuals: this.data.mutuals
+        });
+
+        this.finishScan(false);
+      } catch (err) {
+        this.uiState.status = "idle";
+        this.uiState.statusText = `Hata: ${err.message}`;
+        this.render();
+      }
+    }
+
+    async fetchPaginatedList(userId, listType, onProgress) {
+      const collected = new Map();
+      let cursor = "";
+      let pageCount = 0;
+
+      while (true) {
+        if (this.uiState.aborted) break;
+        while (this.uiState.paused && !this.uiState.aborted) {
+          await new Promise(r => setTimeout(r, 400));
+        }
+
+        const url = `/api/v1/friendships/${encodeURIComponent(userId)}/${listType}/?count=${this.config.pageSize}${cursor ? `&max_id=${encodeURIComponent(cursor)}` : ""}`;
+        const res = await this.apiRequest(url);
+
+        if (!Array.isArray(res?.users)) {
+          throw new Error("Instagram beklenen veri formatını döndürmedi.");
+        }
+
+        for (const raw of res.users) {
+          const id = String(raw.id || raw.pk || "");
+          if (id && !collected.has(id)) {
+            collected.set(id, {
+              id,
+              username: String(raw.username || ""),
+              fullName: String(raw.full_name || ""),
+              avatar: String(raw.profile_pic_url || ""),
+              isVerified: Boolean(raw.is_verified),
+              isPrivate: Boolean(raw.is_private),
+              followsViewer: Boolean(raw.follows_viewer ?? raw.friendship_status?.followed_by)
+            });
+          }
+        }
+
+        onProgress(collected.size);
+
+        const nextCursor = res.next_max_id ? String(res.next_max_id) : "";
+        if (!res.has_more || !nextCursor) break;
+
+        cursor = nextCursor;
+        pageCount++;
+
+        const waitMs = this.randomJitter(this.config.scanMinMs, this.config.scanMaxMs);
+        await this.sleepWithTimer(waitMs, "Sonraki sayfa");
+
+        if (pageCount % this.config.scanBatchPause === 0) {
+          await this.sleepWithTimer(this.config.scanCooldownMs, "Anti-Spam Koruması");
+        }
+      }
+
+      return Array.from(collected.values());
+    }
+
+    categorizeUsers() {
+      this.data.nonFollowers = [];
+      this.data.mutuals = [];
+
+      for (const user of this.data.following) {
+        const isFollowingMe = user.followsViewer ||
+          this.data.followersMap.has(user.id) ||
+          this.data.followersMap.has(user.username.toLowerCase());
+
+        if (isFollowingMe) {
+          this.data.mutuals.push(user);
+        } else {
+          this.data.nonFollowers.push(user);
+        }
+      }
+
+      this.data.nonFollowers.sort((a, b) => a.username.localeCompare(b.username));
+      this.data.mutuals.sort((a, b) => a.username.localeCompare(b.username));
+    }
+
+    finishScan(aborted) {
+      this.uiState.status = "idle";
+      this.uiState.progressPct = aborted ? 0 : 100;
+      this.uiState.statusText = aborted
+        ? "Tarama kullanıcı tarafından durduruldu."
+        : `Analiz tamamlandı: ${this.data.nonFollowers.length} takip etmeyen, ${this.data.mutuals.length} karşılıklı takipleşme bulundu.`;
+      this.render();
+    }
+
+    // --- TAKİPTEN ÇIKARMA (UNFOLLOW) MOTORU ---
+    async executeBatchUnfollow() {
+      const targets = this.getActiveList().filter(u => this.uiState.selectedIds.has(u.id) && !this.whitelist.has(u.id));
+      if (!targets.length) return;
+
+      if (!confirm(`Seçili ${targets.length} hesabı güvenli hızda takipten çıkarmak istediğinize emin misiniz?`)) {
+        return;
+      }
+
+      const csrf = this.getCookie("csrftoken");
+      const viewerId = this.getCookie("ds_user_id");
+      const tokens = await this.resolveSecurityTokens();
+
+      if (!csrf || !tokens) {
+        alert("Güvenlik anahtarları (CSRF / DTSG) okunamadı. Sayfayı yenileyip tekrar deneyin.");
+        return;
+      }
+
+      this.uiState.status = "unfollowing";
+      this.uiState.paused = false;
+      this.uiState.aborted = false;
+      let successCount = 0;
+      let failCount = 0;
+
+      this.render();
+
+      for (let i = 0; i < targets.length; i++) {
+        if (this.uiState.aborted) break;
+        while (this.uiState.paused && !this.uiState.aborted) {
+          await new Promise(r => setTimeout(r, 400));
+        }
+
+        const target = targets[i];
+        const pct = Math.round(((i + 1) / targets.length) * 100);
+        this.updateStatusUI(`Takipten çıkarılıyor: @${target.username}`, pct, `${i + 1} / ${targets.length}`);
+
+        const result = await this.sendUnfollowMutation(target.id, viewerId, csrf, tokens);
+
+        if (result.ok) {
+          successCount++;
+          this.uiState.selectedIds.delete(target.id);
+          this.data.nonFollowers = this.data.nonFollowers.filter(u => u.id !== target.id);
+          this.data.mutuals = this.data.mutuals.filter(u => u.id !== target.id);
+        } else {
+          failCount++;
+          if (result.blocked) {
+            alert(`Instagram geçici işlem kısıtlaması uyguladı. Güvenliğiniz için işlem durduruldu. (${successCount} başarılı)`);
+            break;
+          }
+        }
+
+        if (i < targets.length - 1) {
+          const delay = this.randomJitter(this.config.unfollowMinMs, this.config.unfollowMaxMs);
+          await this.sleepWithTimer(delay, "Sonraki işlem");
+
+          if ((i + 1) % this.config.unfollowBatchPause === 0) {
+            await this.sleepWithTimer(this.config.unfollowCooldownMs, "Güvenlik Molası");
+          }
+        }
+      }
+
+      this.uiState.status = "idle";
+      this.uiState.statusText = `İşlem tamamlandı: ${successCount} hesaptan çıkıldı, ${failCount} başarısız.`;
+      this.render();
+    }
+
+    async sendUnfollowMutation(targetId, viewerId, csrf, tokens) {
+      const formParams = new URLSearchParams({
+        av: viewerId,
+        __d: "www",
+        __user: "0",
+        __a: "1",
+        __comet_req: "7",
+        fb_dtsg: tokens.dtsg,
+        jazoest: this.computeJazoest(tokens.dtsg),
+        lsd: tokens.lsd,
+        fb_api_caller_class: "RelayModern",
+        fb_api_req_friendly_name: IG_PROTOCOL.UNFOLLOW_MUTATION,
+        variables: JSON.stringify({
+          target_user_id: String(targetId),
+          container_module: "profile",
+          nav_chain: "PolarisProfilePostsTabRoot:profilePage:1:via_cold_start"
+        }),
+        server_timestamps: "true",
+        doc_id: IG_PROTOCOL.UNFOLLOW_DOC_ID
+      });
+
+      try {
+        const res = await fetch("/api/graphql", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+            "x-csrftoken": csrf,
+            "x-fb-friendly-name": IG_PROTOCOL.UNFOLLOW_MUTATION,
+            "x-fb-lsd": tokens.lsd,
+            "x-ig-app-id": IG_PROTOCOL.APP_ID,
+            "x-asbd-id": IG_PROTOCOL.ASBD_ID
+          },
+          body: formParams.toString()
+        });
+
+        const rawText = await res.text();
+        if (res.status === 429 || res.status === 403 || /feedback_required|action_blocked|spam/i.test(rawText)) {
+          return { ok: false, blocked: true };
+        }
+        return { ok: res.ok, blocked: false };
+      } catch {
+        return { ok: false, blocked: false };
+      }
+    }
+
+    // --- VERİ DIŞA AKTARMA (CSV / JSON) ---
+    exportCurrentList(format) {
+      const list = this.getFilteredUsers();
+      if (!list.length) {
+        alert("Dışa aktarılacak kullanıcı bulunamadı.");
+        return;
+      }
+
+      let content = "";
+      let mime = "text/plain;charset=utf-8";
+      let ext = "txt";
+
+      if (format === "json") {
+        content = JSON.stringify(list, null, 2);
+        mime = "application/json;charset=utf-8";
+        ext = "json";
+      } else {
+        const header = "ID,Kullanici_Adi,Tam_Ad,Onayli,Gizli_Hesap,Profil_Linki\n";
+        const rows = list.map(u =>
+          `${u.id},${u.username},"${(u.fullName || "").replace(/"/g, '""')}",${u.isVerified},${u.isPrivate},https://www.instagram.com/${u.username}/`
+        ).join("\n");
+        content = "\uFEFF" + header + rows;
+        mime = "text/csv;charset=utf-8";
+        ext = "csv";
+      }
+
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `s_radar_${this.uiState.activeTab}_${new Date().toISOString().slice(0, 10)}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --- FİLTRELEME VE BEYAZ LİSTE ---
+    toggleWhitelist(userId) {
+      if (this.whitelist.has(userId)) {
+        this.whitelist.delete(userId);
+      } else {
+        this.whitelist.add(userId);
+        this.uiState.selectedIds.delete(userId);
+      }
+      this.saveStorage(STORAGE_KEYS.WHITELIST, Array.from(this.whitelist));
+      this.render();
+    }
+
+    getActiveList() {
+      if (this.uiState.activeTab === "nonFollowers") {
+        return this.data.nonFollowers.filter(u => !this.whitelist.has(u.id));
+      }
+      if (this.uiState.activeTab === "mutuals") {
+        return this.data.mutuals.filter(u => !this.whitelist.has(u.id));
+      }
+      if (this.uiState.activeTab === "whitelist") {
+        const all = [...this.data.nonFollowers, ...this.data.mutuals];
+        return all.filter(u => this.whitelist.has(u.id));
+      }
+      return [];
+    }
+
+    getFilteredUsers() {
+      const q = this.uiState.searchQuery.trim().toLowerCase();
+      return this.getActiveList().filter(u => {
+        if (!this.uiState.filterVerified && u.isVerified) return false;
+        if (!this.uiState.filterPrivate && u.isPrivate) return false;
+        if (q && !`${u.username} ${u.fullName}`.toLowerCase().includes(q)) return false;
+        return true;
+      });
+    }
+
+    // --- SHADOW DOM ARAYÜZ İNŞASI ---
+    initShadowDOM() {
+      this.host = document.createElement("div");
+      this.host.id = HOST_ID;
+      document.body.appendChild(this.host);
+      this.shadow = this.host.attachShadow({ mode: "open" });
+
+      // Önceki önbellek varsa yükle
+      const cached = this.loadStorage(STORAGE_KEYS.CACHE, null);
+      if (cached && Array.isArray(cached.nonFollowers)) {
+        this.data.nonFollowers = cached.nonFollowers;
+        this.data.mutuals = cached.mutuals || [];
+        this.uiState.statusText = `Son kayıtlı tarama yüklendi (${this.data.nonFollowers.length} takip etmeyen).`;
+      }
+
+      this.render();
+    }
+
+    updateStatusUI(text, pct, counter) {
+      this.uiState.statusText = text;
+      this.uiState.progressPct = pct;
+      this.uiState.counterText = counter;
+
+      const stEl = this.shadow.querySelector("[data-status-text]");
+      const barEl = this.shadow.querySelector("[data-prog-bar]");
+      const cntEl = this.shadow.querySelector("[data-counter-text]");
+
+      if (stEl) stEl.textContent = text;
+      if (barEl) barEl.style.width = `${pct}%`;
+      if (cntEl) cntEl.textContent = counter;
+    }
+
+    updateTimerUI(text) {
+      this.uiState.timerText = text;
+      const tEl = this.shadow.querySelector("[data-timer-text]");
+      if (tEl) tEl.textContent = text;
+    }
+
+    getStyles() {
+      return `
+        :host {
+          all: initial;
+          position: fixed;
+          inset: 0;
+          z-index: 2147483646;
+          pointer-events: none;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          color: #ECEFF1;
+        }
+        * { box-sizing: border-box; }
+        .sr-modal {
+          pointer-events: auto;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 680px;
+          max-width: calc(100vw - 24px);
+          height: 580px;
+          max-height: calc(100vh - 24px);
+          background: #0F1715;
+          border: 1px solid #1E352F;
+          border-radius: 16px;
+          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .sr-topbar {
+          background: linear-gradient(90deg, #0B5D4B 0%, #09382E 100%);
+          padding: 14px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #1E352F;
+        }
+        .sr-title {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .sr-badge {
+          background: #10B981;
+          color: #052E16;
+          font-weight: 700;
+          font-size: 11px;
+          padding: 3px 8px;
+          border-radius: 6px;
+          letter-spacing: 0.5px;
+        }
+        .sr-title h1 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #FFFFFF;
+        }
+        .sr-close {
+          background: rgba(255,255,255,0.1);
+          border: none;
+          color: #FFF;
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 15px;
+        }
+        .sr-close:hover { background: rgba(239, 68, 68, 0.8); }
+
+        .sr-status-box {
+          background: #14221E;
+          padding: 12px 20px;
+          border-bottom: 1px solid #1E352F;
+        }
+        .sr-status-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: #A7F3D0;
+          margin-bottom: 6px;
+        }
+        .sr-progress-track {
+          height: 6px;
+          background: #09100E;
+          border-radius: 99px;
+          overflow: hidden;
+        }
+        .sr-progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #10B981, #34D399);
+          width: 0%;
+          transition: width 0.25s ease;
+        }
+
+        .sr-tabs {
+          display: flex;
+          background: #111C19;
+          border-bottom: 1px solid #1E352F;
+          padding: 0 16px;
+          gap: 6px;
+        }
+        .sr-tab {
+          background: transparent;
+          border: none;
+          color: #94A3B8;
+          padding: 11px 14px;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+        }
+        .sr-tab:hover { color: #FFF; }
+        .sr-tab.active {
+          color: #10B981;
+          border-bottom-color: #10B981;
+          font-weight: 600;
+        }
+
+        .sr-toolbar {
+          display: flex;
+          gap: 10px;
+          padding: 10px 20px;
+          background: #0F1715;
+          border-bottom: 1px solid #1E352F;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .sr-search {
+          flex: 1;
+          min-width: 180px;
+          background: #162420;
+          border: 1px solid #26423B;
+          color: #FFF;
+          padding: 7px 12px;
+          border-radius: 8px;
+          font-size: 13px;
+        }
+        .sr-search:focus { outline: 1px solid #10B981; }
+        .sr-chip {
+          font-size: 12px;
+          background: #162420;
+          border: 1px solid #26423B;
+          color: #CBD5E1;
+          padding: 6px 10px;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+        .sr-chip.active {
+          background: rgba(16, 185, 129, 0.15);
+          border-color: #10B981;
+          color: #34D399;
+        }
+
+        .sr-list {
+          flex: 1;
+          overflow-y: auto;
+          padding: 8px 16px;
+        }
+        .sr-user {
+          display: grid;
+          grid-template-columns: 24px 40px 1fr auto;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 10px;
+          border-radius: 10px;
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .sr-user:hover { background: rgba(255,255,255,0.03); }
+        .sr-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          background: #1E352F;
+        }
+        .sr-user-info a {
+          color: #F8FAFC;
+          font-weight: 600;
+          font-size: 13.5px;
+          text-decoration: none;
+        }
+        .sr-user-info a:hover { color: #34D399; }
+        .sr-user-sub {
+          color: #64748B;
+          font-size: 12px;
+          margin-top: 2px;
+        }
+        .sr-tag {
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          margin-left: 6px;
+          background: #1E293B;
+          color: #94A3B8;
+        }
+        .sr-tag.verified { background: rgba(56, 189, 248, 0.15); color: #38BDF8; }
+
+        .sr-footer {
+          padding: 12px 20px;
+          background: #111C19;
+          border-top: 1px solid #1E352F;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .sr-btn {
+          background: #1E352F;
+          border: 1px solid #2D4F46;
+          color: #FFF;
+          padding: 8px 14px;
+          border-radius: 8px;
+          font-size: 12.5px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+        .sr-btn:hover:not(:disabled) { background: #28473F; }
+        .sr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .sr-btn.primary { background: #0B5D4B; border-color: #10B981; }
+        .sr-btn.primary:hover:not(:disabled) { background: #0E745E; }
+        .sr-btn.danger { background: #991B1B; border-color: #EF4444; }
+        .sr-btn.danger:hover:not(:disabled) { background: #B91C1C; }
+
+        .sr-settings-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+          padding: 16px;
+        }
+        .sr-field {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          font-size: 12px;
+          color: #94A3B8;
+        }
+        .sr-field input {
+          background: #162420;
+          border: 1px solid #26423B;
+          color: #FFF;
+          padding: 8px;
+          border-radius: 6px;
+        }
+        .sr-empty {
+          text-align: center;
+          padding: 60px 20px;
+          color: #64748B;
+          font-size: 14px;
+        }
+      `;
+    }
+
+    render() {
+      const isBusy = this.uiState.status !== "idle";
+      const filtered = this.getFilteredUsers();
+      const allSelected = filtered.length > 0 && filtered.every(u => this.uiState.selectedIds.has(u.id));
+
+      this.shadow.innerHTML = `
+        <style>${this.getStyles()}</style>
+        <div class="sr-modal">
+          <div class="sr-topbar">
+            <div class="sr-title">
+              <span class="sr-badge">PRO v1.0</span>
+              <h1>S-Follow Radar · Instagram Analiz Motoru</h1>
+            </div>
+            <button class="sr-close" data-action="close" title="Kapat">✕</button>
+          </div>
+
+          <div class="sr-status-box">
+            <div class="sr-status-row">
+              <span data-status-text>${this.uiState.statusText}</span>
+              <span>
+                <strong data-timer-text style="color:#FBBF24;margin-right:10px;">${this.uiState.timerText}</strong>
+                <span data-counter-text>${this.uiState.counterText}</span>
+              </span>
+            </div>
+            <div class="sr-progress-track">
+              <div class="sr-progress-fill" data-prog-bar style="width:${this.uiState.progressPct}%"></div>
+            </div>
+          </div>
+
+          <div class="sr-tabs">
+            <button class="sr-tab ${this.uiState.activeTab === "nonFollowers" ? "active" : ""}" data-tab="nonFollowers">
+              Takip Etmeyenler (${this.data.nonFollowers.filter(u => !this.whitelist.has(u.id)).length})
+            </button>
+            <button class="sr-tab ${this.uiState.activeTab === "mutuals" ? "active" : ""}" data-tab="mutuals">
+              Takipleştiklerim (${this.data.mutuals.filter(u => !this.whitelist.has(u.id)).length})
+            </button>
+            <button class="sr-tab ${this.uiState.activeTab === "whitelist" ? "active" : ""}" data-tab="whitelist">
+              Beyaz Liste (${this.whitelist.size})
+            </button>
+            <button class="sr-tab ${this.uiState.activeTab === "settings" ? "active" : ""}" data-tab="settings">
+              Güvenlik Ayarları
+            </button>
+          </div>
+
+          ${this.uiState.activeTab === "settings" ? this.renderSettingsTab() : `
+            <div class="sr-toolbar">
+              <input type="search" class="sr-search" data-search placeholder="Kullanıcı adı veya isim ara..." value="${this.uiState.searchQuery}">
+              <button class="sr-chip ${this.uiState.filterVerified ? "active" : ""}" data-filter="filterVerified">Onaylı Hesaplar</button>
+              <button class="sr-chip ${this.uiState.filterPrivate ? "active" : ""}" data-filter="filterPrivate">Gizli Hesaplar</button>
+              <button class="sr-btn" data-action="export-csv" ${filtered.length ? "" : "disabled"}>CSV İndir</button>
+              <button class="sr-btn" data-action="export-json" ${filtered.length ? "" : "disabled"}>JSON İndir</button>
+            </div>
+
+            <div class="sr-list">
+              ${filtered.length === 0 ? `<div class="sr-empty">Bu görünümde listelenecek hesap yok. Analizi başlatın veya filtreleri değiştirin.</div>` :
+                filtered.map(u => `
+                  <div class="sr-user">
+                    <input type="checkbox" data-check="${u.id}" ${this.uiState.selectedIds.has(u.id) ? "checked" : ""}>
+                    <img class="sr-avatar" src="${u.avatar}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+                    <div class="sr-user-info">
+                      <div>
+                        <a href="/${u.username}/" target="_blank" rel="noopener">@${u.username}</a>
+                        ${u.isVerified ? `<span class="sr-tag verified">Onaylı</span>` : ""}
+                        ${u.isPrivate ? `<span class="sr-tag">Gizli</span>` : ""}
+                      </div>
+                      <div class="sr-user-sub">${u.fullName || ""}</div>
+                    </div>
+                    <button class="sr-btn" data-whitelist="${u.id}">
+                      ${this.whitelist.has(u.id) ? "Korumadan Çıkar" : "Koru (Whitelist)"}
+                    </button>
+                  </div>
+                `).join("")
+              }
+            </div>
+          `}
+
+          <div class="sr-footer">
+            <div style="display:flex;gap:8px;align-items:center;">
+              ${!isBusy ? `
+                <button class="sr-btn primary" data-action="start-scan">Taramayı Başlat</button>
+                <button class="sr-btn" data-action="toggle-all" ${filtered.length ? "" : "disabled"}>
+                  ${allSelected ? "Seçimi Temizle" : "Tümünü Seç"}
+                </button>
+                <span style="font-size:12px;color:#94A3B8;">Seçili: ${this.uiState.selectedIds.size}</span>
+              ` : `
+                <button class="sr-btn" data-action="pause-resume">${this.uiState.paused ? "Devam Et" : "Duraklat"}</button>
+                <button class="sr-btn danger" data-action="abort">İptal Et</button>
+              `}
+            </div>
+
+            <div>
+              <button class="sr-btn danger" data-action="unfollow-selected" ${!isBusy && this.uiState.selectedIds.size > 0 && this.uiState.activeTab !== "whitelist" ? "" : "disabled"}>
+                Seçilenleri Takipten Çık (${this.uiState.selectedIds.size})
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.bindEvents();
+    }
+
+    renderSettingsTab() {
+      return `
+        <div class="sr-list">
+          <div class="sr-settings-grid">
+            <label class="sr-field">
+              <span>Sayfa Başına İstek (Max 200)</span>
+              <input type="number" data-cfg="pageSize" value="${this.config.pageSize}">
+            </label>
+            <label class="sr-field">
+              <span>Tarama Min Gecikme (ms)</span>
+              <input type="number" data-cfg="scanMinMs" value="${this.config.scanMinMs}">
+            </label>
+            <label class="sr-field">
+              <span>Tarama Maks Gecikme (ms)</span>
+              <input type="number" data-cfg="scanMaxMs" value="${this.config.scanMaxMs}">
+            </label>
+            <label class="sr-field">
+              <span>Takipten Çıkma Min Bekleme (ms)</span>
+              <input type="number" data-cfg="unfollowMinMs" value="${this.config.unfollowMinMs}">
+            </label>
+            <label class="sr-field">
+              <span>Takipten Çıkma Maks Bekleme (ms)</span>
+              <input type="number" data-cfg="unfollowMaxMs" value="${this.config.unfollowMaxMs}">
+            </label>
+            <label class="sr-field">
+              <span>Kaç İşlemde Bir Uzun Mola Verilsin?</span>
+              <input type="number" data-cfg="unfollowBatchPause" value="${this.config.unfollowBatchPause}">
+            </label>
+            <label class="sr-field">
+              <span>Uzun Güvenlik Molası Süresi (ms)</span>
+              <input type="number" data-cfg="unfollowCooldownMs" value="${this.config.unfollowCooldownMs}">
+            </label>
+          </div>
+          <div style="padding:0 16px;">
+            <button class="sr-btn primary" data-action="save-settings">Ayarları Kaydet</button>
+          </div>
+        </div>
+      `;
+    }
+
+    bindEvents() {
+      const s = this.shadow;
+
+      s.querySelector("[data-action='close']")?.addEventListener("click", () => {
+        this.uiState.aborted = true;
+        this.activeController?.abort();
+        this.host.remove();
+      });
+
+      s.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          this.uiState.activeTab = btn.getAttribute("data-tab");
+          this.uiState.selectedIds.clear();
+          this.render();
+        });
+      });
+
+      const searchInput = s.querySelector("[data-search]");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          this.uiState.searchQuery = e.target.value;
+          this.render();
+          const newSearch = this.shadow.querySelector("[data-search]");
+          if (newSearch) {
+            newSearch.focus();
+            newSearch.setSelectionRange(newSearch.value.length, newSearch.value.length);
+          }
+        });
+      }
+
+      s.querySelectorAll("[data-filter]").forEach(chip => {
+        chip.addEventListener("click", () => {
+          const key = chip.getAttribute("data-filter");
+          this.uiState[key] = !this.uiState[key];
+          this.render();
+        });
+      });
+
+      s.querySelectorAll("[data-check]").forEach(chk => {
+        chk.addEventListener("change", () => {
+          const id = chk.getAttribute("data-check");
+          if (chk.checked) this.uiState.selectedIds.add(id);
+          else this.uiState.selectedIds.delete(id);
+          this.render();
+        });
+      });
+
+      s.querySelectorAll("[data-whitelist]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          this.toggleWhitelist(btn.getAttribute("data-whitelist"));
+        });
+      });
+
+      s.querySelector("[data-action='toggle-all']")?.addEventListener("click", () => {
+        const filtered = this.getFilteredUsers();
+        const allSelected = filtered.every(u => this.uiState.selectedIds.has(u.id));
+        if (allSelected) filtered.forEach(u => this.uiState.selectedIds.delete(u.id));
+        else filtered.forEach(u => this.uiState.selectedIds.add(u.id));
+        this.render();
+      });
+
+      s.querySelector("[data-action='start-scan']")?.addEventListener("click", () => this.startAnalysis());
+      s.querySelector("[data-action='unfollow-selected']")?.addEventListener("click", () => this.executeBatchUnfollow());
+
+      s.querySelector("[data-action='pause-resume']")?.addEventListener("click", () => {
+        this.uiState.paused = !this.uiState.paused;
+        this.render();
+      });
+
+      s.querySelector("[data-action='abort']")?.addEventListener("click", () => {
+        this.uiState.aborted = true;
+        this.uiState.paused = false;
+        this.activeController?.abort();
+      });
+
+      s.querySelector("[data-action='export-csv']")?.addEventListener("click", () => this.exportCurrentList("csv"));
+      s.querySelector("[data-action='export-json']")?.addEventListener("click", () => this.exportCurrentList("json"));
+
+      s.querySelector("[data-action='save-settings']")?.addEventListener("click", () => {
+        s.querySelectorAll("[data-cfg]").forEach(inp => {
+          const k = inp.getAttribute("data-cfg");
+          const v = Number(inp.value);
+          if (Number.isFinite(v) && v > 0) this.config[k] = v;
+        });
+        this.saveStorage(STORAGE_KEYS.CONFIG, this.config);
+        alert("Güvenlik ve hız ayarları kaydedildi.");
+      });
+    }
+  }
+
+  new SFollowRadar();
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var followers=new Set(), following=new Set(), got={followers:0,following:0};
+  var tab='not', shown=200, isDemo=false;
+  var RE_F=/^followers(_\d+)?\.(json|html?)$/i, RE_G=/^following(_\d+)?\.(json|html?)$/i, RE_U=/^[a-z0-9._]{1,30}$/;
+
+  var rawCodeEl=$('consoleCodeRaw'), codeBoxEl=$('consoleCodeBox');
+  if(rawCodeEl&&codeBoxEl){
+    codeBoxEl.value=rawCodeEl.textContent.trim();
+  }
+
+  function copyWithFallback(text,onDone){
+    var fallback=function(){
+      try{
+        var ta=document.createElement('textarea');
+        ta.value=text;
+        ta.style.position='fixed';
+        ta.style.opacity='0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        var ok=document.execCommand('copy');
+        document.body.removeChild(ta);
+        onDone(Boolean(ok));
+      }catch(e){onDone(false)}
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){onDone(true)},fallback);
+    }else{
+      fallback();
+    }
+  }
+
+  $('copyCode').addEventListener('click',function(){
+    var btn=this, text=codeBoxEl?codeBoxEl.value:'';
+    copyWithFallback(text,function(ok){
+      btn.textContent=ok?'Kod kopyalandı':'Kopyalanamadı';
+      setTimeout(function(){btn.textContent='Kodu kopyala'},1800);
+    });
+  });
+
+  $('selectCode').addEventListener('click',function(){
+    if(codeBoxEl){
+      codeBoxEl.focus();
+      codeBoxEl.select();
+    }
+  });
+
+  function fromHref(h){
+    if(!h) return '';
+    var m=String(h).match(/instagram\.com\/(?:_u\/)?([^\/?#]+)/i);
+    return m?decodeURIComponent(m[1]):'';
+  }
+  function clean(u){u=String(u||'').trim().replace(/^@/,'').toLowerCase();return RE_U.test(u)?u:''}
+
+  function namesFromJson(data,key){
+    var arr=Array.isArray(data)?data:(data&&data[key])||[];
+    if(!Array.isArray(arr)){ // bilinmeyen sarmalayıcı: ilk dizi alanını dene
+      arr=[]; for(var k in data){ if(Array.isArray(data[k])){arr=data[k];break} }
+    }
+    var out=[];
+    arr.forEach(function(it){
+      if(!it) return;
+      var s=(it.string_list_data&&it.string_list_data[0])||{};
+      var u=clean(s.value)||clean(it.title)||clean(fromHref(s.href));
+      if(u) out.push(u);
+    });
+    return out;
+  }
+  function namesFromHtml(text){
+    var doc=new DOMParser().parseFromString(text,'text/html'), out=[];
+    doc.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){
+      var u=clean(fromHref(a.getAttribute('href')))||clean(a.textContent);
+      if(u) out.push(u);
+    });
+    return out;
+  }
+  function take(name,text){
+    var base=name.split('/').pop(), kind=RE_F.test(base)?'followers':RE_G.test(base)?'following':'';
+    if(!kind) return false;
+    var names;
+    if(/\.json$/i.test(base)){
+      var data; try{data=JSON.parse(text)}catch(e){return false}
+      names=namesFromJson(data,kind==='followers'?'relationships_followers':'relationships_following');
+    }else names=namesFromHtml(text);
+    var set=kind==='followers'?followers:following;
+    names.forEach(function(u){set.add(u)});
+    got[kind]++;
+    return true;
+  }
+
+  async function handle(fileList){
+    var files=Array.prototype.slice.call(fileList||[]);
+    if(!files.length) return;
+    if(isDemo) clear();
+    say('Okunuyor…');
+    var used=0;
+    for(var i=0;i<files.length;i++){
+      var f=files[i];
+      try{
+        if(/\.zip$/i.test(f.name)){
+          if(typeof JSZip==='undefined'){say('Zip okuyucu yüklenemedi. Zip dosyasını açıp içindeki followers ve following dosyalarını seç.');return}
+          var zip=await JSZip.loadAsync(f), names=Object.keys(zip.files);
+          for(var j=0;j<names.length;j++){
+            var n=names[j], b=n.split('/').pop();
+            if(zip.files[n].dir||!(RE_F.test(b)||RE_G.test(b))) continue;
+            if(take(n,await zip.files[n].async('string'))) used++;
+          }
+        }else if(take(f.name,await f.text())) used++;
+      }catch(e){}
+    }
+    if(!used&&!got.followers&&!got.following){
+      say('Bu dosyalarda takipçi listesi bulunamadı. Dışa aktarırken "Takipçiler ve takip edilenler" kutusunu işaretlediğinden emin ol.');
+      return;
+    }
+    update();
+  }
+
+  function update(){
+    var fl=$('files'); fl.textContent='';
+    [['followers','Takipçi dosyası'],['following','Takip edilen dosyası']].forEach(function(p){
+      var c=document.createElement('span'); c.className='chip'+(got[p[0]]?' ok':'');
+      c.textContent=p[1]+(got[p[0]]?' yüklendi':' bekleniyor'); fl.appendChild(c);
+    });
+    if(!got.followers||!got.following){
+      $('res').hidden=true;
+      say(got.followers?'Takipçi dosyası tamam. Şimdi following dosyasını da ekle.':'Takip edilen dosyası tamam. Şimdi followers_1 dosyasını da ekle.');
+      return;
+    }
+    say('');
+    $('demoTag').hidden=!isDemo;
+    $('res').hidden=false;
+    shown=200; draw();
+  }
+
+  function lists(){
+    var not=[],fans=[],both=[];
+    following.forEach(function(u){(followers.has(u)?both:not).push(u)});
+    followers.forEach(function(u){if(!following.has(u))fans.push(u)});
+    return {not:not.sort(),fans:fans.sort(),both:both.sort()};
+  }
+  function current(){
+    var q=$('q').value.trim().toLowerCase().replace(/^@/,''), l=lists()[tab];
+    return q?l.filter(function(u){return u.indexOf(q)>-1}):l;
+  }
+  function draw(){
+    var all=lists(), fmt=function(n){return n.toLocaleString('tr-TR')};
+    $('nFollowing').textContent=fmt(following.size);
+    $('nFollowers').textContent=fmt(followers.size);
+    $('nNot').textContent=fmt(all.not.length);
+    var l=current(), box=$('list'); box.textContent='';
+    if(!l.length){
+      var e=document.createElement('div'); e.className='empty';
+      e.textContent=$('q').value?'Aramana uyan hesap yok.':tab==='not'?'Takip ettiğin herkes seni geri takip ediyor.':'Bu listede hesap yok.';
+      box.appendChild(e);
+    }
+    l.slice(0,shown).forEach(function(u){
+      var r=document.createElement('div'); r.className='row';
+      var av=document.createElement('span'); av.className='av'; av.textContent=u.replace(/[._]/g,'').charAt(0)||'·';
+      var un=document.createElement('span'); un.className='un'; un.textContent='@'+u;
+      var a=document.createElement('a'); a.href='https://www.instagram.com/'+encodeURIComponent(u)+'/'; a.target='_blank'; a.rel='noopener noreferrer'; a.textContent='Profili aç';
+      r.appendChild(av); r.appendChild(un); r.appendChild(a); box.appendChild(r);
+    });
+    var left=l.length-shown;
+    $('more').hidden=left<=0;
+    if(left>0) $('more').textContent='Daha fazla göster ('+left.toLocaleString('tr-TR')+')';
+  }
+
+  function clear(){
+    followers.clear(); following.clear(); got={followers:0,following:0}; isDemo=false;
+    $('res').hidden=true; $('files').textContent=''; $('q').value=''; say(''); $('file').value='';
+  }
+  function say(t){$('msg').textContent=t}
+
+  var drop=$('drop');
+  ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over')})});
+  ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over')})});
+  drop.addEventListener('drop',function(e){handle(e.dataTransfer.files)});
+  $('pick').addEventListener('click',function(){$('file').click()});
+  $('file').addEventListener('change',function(e){handle(e.target.files)});
+  $('q').addEventListener('input',function(){shown=200;draw()});
+  $('more').addEventListener('click',function(){shown+=200;draw()});
+  $('reset').addEventListener('click',clear);
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.seg button').forEach(function(x){x.setAttribute('aria-selected',x===b?'true':'false')});
+      tab=b.dataset.t; shown=200; draw();
+    });
+  });
+  $('copy').addEventListener('click',function(){
+    var btn=this, text=current().map(function(u){return '@'+u}).join('\n');
+    var done=function(ok){btn.textContent=ok?'Kopyalandı':'Kopyalanamadı';setTimeout(function(){btn.textContent='Listeyi kopyala'},1600)};
+    copyWithFallback(text,done);
+  });
+  $('demo').addEventListener('click',function(){
+    clear(); isDemo=true;
+    'deniz.kaya,elif_arslan,mert.yildiz,zeynep.dmr,can_ozturk,ayse.celik,burak.sahin,selin_aydin,emre.kilic,melis.koc'.split(',').forEach(function(u){followers.add(u)});
+    'deniz.kaya,elif_arslan,mert.yildiz,zeynep.dmr,can_ozturk,gezgin.kadraj,lezzet.duragi,haber.ozeti,oyun_merkezi,tekno.gundem,spor.dakika'.split(',').forEach(function(u){following.add(u)});
+    got={followers:1,following:1}; update();
+    $('res').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+})();
+</script>
+
+</body></html>
